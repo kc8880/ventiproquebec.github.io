@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VentiPro Québec | HVAC Cleaning</title>
+<title>VentiPro Québec | Nettoyage HVAC</title>
 
 <style>
 body{
@@ -16,12 +16,13 @@ overflow-x:hidden;
 
 /* HERO */
 .hero{
-position:relative;
 height:100vh;
+position:relative;
 display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
+overflow:hidden;
 }
 
 #c{
@@ -36,29 +37,31 @@ z-index:0;
 .overlay{
 position:relative;
 z-index:2;
-max-width:700px;
+max-width:800px;
 padding:20px;
 }
 
 h1{
-font-size:3.2rem;
-margin-bottom:10px;
+font-size:3.5rem;
+margin:0;
+letter-spacing:1px;
 }
 
 p{
-opacity:0.8;
+opacity:0.85;
+margin-top:10px;
 font-size:1.1rem;
-margin-bottom:20px;
 }
 
 .btn{
-padding:14px 26px;
+margin-top:20px;
+padding:15px 30px;
 border:none;
-border-radius:30px;
+border-radius:40px;
 cursor:pointer;
 font-weight:bold;
 background:#00c8ff;
-color:black;
+color:#001018;
 transition:0.3s;
 }
 
@@ -66,14 +69,14 @@ transition:0.3s;
 transform:scale(1.05);
 }
 
-/* SECTION */
+/* SECTIONS */
 .section{
 padding:80px 20px;
-max-width:1000px;
+max-width:1100px;
 margin:auto;
 }
 
-.cards{
+.grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:20px;
@@ -81,9 +84,14 @@ gap:20px;
 
 .card{
 background:#0d1b2a;
-padding:20px;
+padding:25px;
 border-radius:15px;
 border:1px solid #1d3557;
+}
+
+.card h3{
+margin-top:0;
+color:#00c8ff;
 }
 </style>
 </head>
@@ -92,34 +100,44 @@ border:1px solid #1d3557;
 
 <!-- HERO -->
 <div class="hero">
-
 <canvas id="c"></canvas>
 
 <div class="overlay">
-<h1>Nettoyage de ventilation</h1>
-<p>Service professionnel à Montréal & Laval — résidentiel et commercial</p>
-<button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
-Demander une soumission
+<h1>Nettoyage de ventilation professionnel</h1>
+<p>Service HVAC résidentiel & commercial — Montréal & Laval</p>
+<button class="btn" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">
+Obtenir une soumission gratuite
 </button>
 </div>
 
 </div>
 
 <!-- SERVICES -->
-<div class="section">
-<h2>Nos services</h2>
+<div class="section" id="services">
+<h2>Nos services HVAC</h2>
 
-<div class="cards">
-<div class="card">Nettoyage conduits HVAC résidentiel</div>
-<div class="card">Nettoyage sécheuse</div>
-<div class="card">Commercial & multi-logements</div>
+<div class="grid">
+<div class="card">
+<h3>Résidentiel</h3>
+<p>Nettoyage complet des conduits d’air pour maisons et condos.</p>
+</div>
+
+<div class="card">
+<h3>Commercial</h3>
+<p>Entretien des systèmes de ventilation pour entreprises.</p>
+</div>
+
+<div class="card">
+<h3>Dryer Vent</h3>
+<p>Nettoyage sécuritaire des conduits de sécheuse.</p>
+</div>
 </div>
 </div>
 
 <!-- CONTACT -->
-<div class="section" id="contact">
-<h2>Contact</h2>
-<p>Appel rapide ou soumission gratuite</p>
+<div class="section">
+<h2>Soumission rapide</h2>
+<p>Réponse rapide à Montréal et Laval</p>
 </div>
 
 <script type="module">
@@ -130,7 +148,7 @@ const scene = new THREE.Scene();
 
 /* CAMERA */
 const camera = new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,1000);
-camera.position.set(0,1,7);
+camera.position.set(0,1,6.5);
 
 /* RENDERER */
 const renderer = new THREE.WebGLRenderer({
@@ -142,55 +160,55 @@ antialias:true
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 
-/* LIGHT */
-scene.add(new THREE.AmbientLight(0xffffff,1.1));
+/* LIGHTING PREMIUM */
+scene.add(new THREE.AmbientLight(0xffffff,1));
 
-const dir = new THREE.DirectionalLight(0xffffff,2);
-dir.position.set(5,5,5);
-scene.add(dir);
+const key = new THREE.DirectionalLight(0xffffff,2.5);
+key.position.set(6,6,5);
+scene.add(key);
 
-/* MAIN DUCT (REALISTIC METAL) */
+/* MAIN HVAC DUCT (REALISTIC METAL) */
 const duct = new THREE.Mesh(
-new THREE.CylinderGeometry(1.1,1.1,6,80),
+new THREE.CylinderGeometry(1.05,1.05,6,100),
 new THREE.MeshStandardMaterial({
-color:0xc0c6cc,
+color:0xc9d1d9,
 metalness:1,
-roughness:0.22
+roughness:0.18
 })
 );
 duct.rotation.z = Math.PI/2;
 scene.add(duct);
 
-/* INNER FLOW GLOW */
-const flow = new THREE.Mesh(
-new THREE.CylinderGeometry(0.9,0.9,5.8,80),
+/* INNER AIR CORE */
+const core = new THREE.Mesh(
+new THREE.CylinderGeometry(0.85,0.85,5.8,100),
 new THREE.MeshBasicMaterial({
 color:0x00c8ff,
 transparent:true,
-opacity:0.07
+opacity:0.06
 })
 );
-flow.rotation.z = Math.PI/2;
-scene.add(flow);
+core.rotation.z = Math.PI/2;
+scene.add(core);
 
-/* DUST */
-const count = 600;
+/* PARTICLES (clean professional dust) */
+const count = 700;
 const geo = new THREE.BufferGeometry();
 const pos = new Float32Array(count*3);
 
 for(let i=0;i<count;i++){
 pos[i*3] = (Math.random()-0.5)*6;
-pos[i*3+1] = (Math.random()-0.5)*1.3;
-pos[i*3+2] = (Math.random()-0.5)*1.3;
+pos[i*3+1] = (Math.random()-0.5)*1.2;
+pos[i*3+2] = (Math.random()-0.5)*1.2;
 }
 
 geo.setAttribute("position",new THREE.BufferAttribute(pos,3));
 
 const mat = new THREE.PointsMaterial({
-color:0x8a8f94,
-size:0.025,
+color:0x7f8c8d,
+size:0.02,
 transparent:true,
-opacity:0.6
+opacity:0.55
 });
 
 const dust = new THREE.Points(geo,mat);
@@ -200,13 +218,13 @@ scene.add(dust);
 function animate(){
 requestAnimationFrame(animate);
 
-duct.rotation.y += 0.0008;
-flow.rotation.y += 0.0012;
+duct.rotation.y += 0.0007;
+core.rotation.y += 0.001;
 
 const p = geo.attributes.position.array;
 
 for(let i=0;i<count;i++){
-p[i*3] += 0.008;
+p[i*3] += 0.007;
 if(p[i*3] > 3) p[i*3] = -3;
 }
 
