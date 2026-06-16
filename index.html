@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VentiPro Québec</title>
+<title>VentiPro Québec | Nettoyage de ventilation</title>
 
 <style>
 body{
 margin:0;
 overflow:hidden;
 font-family:Arial;
-background:radial-gradient(circle,#0b1b2a,#050b14);
+background:radial-gradient(circle at top,#0d1b2a,#050b14);
 color:white;
 }
 
@@ -21,39 +21,46 @@ left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 z-index:10;
+max-width:600px;
 }
 
 h1{
-font-size:2.8rem;
-letter-spacing:1px;
+font-size:3rem;
+margin-bottom:10px;
 }
 
-p{opacity:0.8}
+p{
+opacity:0.8;
+margin-bottom:20px;
+}
 
 button{
-padding:12px 25px;
-margin:10px;
+padding:14px 28px;
 border:none;
 border-radius:30px;
 cursor:pointer;
 font-weight:bold;
+margin:10px;
 transition:0.3s;
 }
 
-#before{background:#555;color:white;}
-#after{background:#00c8ff;color:white;}
-#after:hover{transform:scale(1.05);}
-#before:hover{transform:scale(1.05);}
+#book{
+background:#00c8ff;
+color:black;
+}
+
+#book:hover{
+transform:scale(1.05);
+}
 </style>
 </head>
 
 <body>
 
 <div id="ui">
-<h1>Nettoyage de Ventilation</h1>
-<p>Montréal • Laval • Rive-Nord</p>
-<button id="before">Système encrassé</button>
-<button id="after">Après nettoyage</button>
+<h1>Nettoyage de ventilation</h1>
+<p>Montréal • Laval • Résidentiel & Commercial</p>
+<button id="book">Prendre un rendez-vous</button>
 </div>
 
 <canvas id="c"></canvas>
@@ -65,8 +72,8 @@ import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 const scene = new THREE.Scene();
 
 /* CAMERA */
-const camera = new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,1000);
-camera.position.set(0,0,7);
+const camera = new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.1,1000);
+camera.position.set(0,1,7);
 
 /* RENDERER */
 const renderer = new THREE.WebGLRenderer({
@@ -74,72 +81,79 @@ canvas:document.querySelector("#c"),
 alpha:true,
 antialias:true
 });
+
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 
-/* LIGHT (premium look) */
+/* LIGHTS */
 scene.add(new THREE.AmbientLight(0xffffff,1.2));
 
-const light = new THREE.DirectionalLight(0xffffff,2);
-light.position.set(5,5,5);
-scene.add(light);
+const light1 = new THREE.DirectionalLight(0xffffff,2);
+light1.position.set(5,5,5);
+scene.add(light1);
 
-/* HVAC PIPE (metal look) */
-const pipe = new THREE.Mesh(
-new THREE.CylinderGeometry(1.2,1.2,5,64),
+/* HVAC DUCT (REALISTIC STYLE) */
+const duct = new THREE.Mesh(
+new THREE.CylinderGeometry(1.2,1.2,6,64),
 new THREE.MeshStandardMaterial({
-color:0xb0b0b0,
-metalness:0.9,
+color:0xbfc5cc,
+metalness:0.95,
 roughness:0.25
 })
 );
-pipe.rotation.z = Math.PI/2;
-scene.add(pipe);
+duct.rotation.z = Math.PI/2;
+scene.add(duct);
 
-/* DUST (more realistic spread) */
-const count = 400;
+/* INNER AIR FLOW (subtle glow) */
+const glow = new THREE.Mesh(
+new THREE.CylinderGeometry(0.8,0.8,5.8,64),
+new THREE.MeshBasicMaterial({
+color:0x00c8ff,
+transparent:true,
+opacity:0.08
+})
+);
+glow.rotation.z = Math.PI/2;
+scene.add(glow);
+
+/* DUST PARTICLES (professional subtle) */
+const count = 500;
 const geo = new THREE.BufferGeometry();
 const pos = new Float32Array(count*3);
 
 for(let i=0;i<count;i++){
-pos[i*3] = (Math.random()-0.5)*5;
-pos[i*3+1] = (Math.random()-0.5)*1.5;
-pos[i*3+2] = (Math.random()-0.5)*1.5;
+pos[i*3] = (Math.random()-0.5)*6;
+pos[i*3+1] = (Math.random()-0.5)*1.2;
+pos[i*3+2] = (Math.random()-0.5)*1.2;
 }
 
 geo.setAttribute("position",new THREE.BufferAttribute(pos,3));
 
 const mat = new THREE.PointsMaterial({
-color:0x888888,
-size:0.04,
+color:0x9aa0a6,
+size:0.03,
 transparent:true,
-opacity:0.7
+opacity:0.6
 });
 
 const dust = new THREE.Points(geo,mat);
 scene.add(dust);
 
-/* STATE */
-let dirty = 1;
-
-document.querySelector("#before").onclick=()=>dirty=1;
-document.querySelector("#after").onclick=()=>dirty=0;
-
-/* LOOP */
+/* ANIMATION */
 function animate(){
 requestAnimationFrame(animate);
+
+duct.rotation.y += 0.001;
+glow.rotation.y += 0.0015;
 
 const p = geo.attributes.position.array;
 
 for(let i=0;i<count;i++){
-p[i*3] += 0.015 + dirty*0.05;
-if(p[i*3] > 2.5) p[i*3] = -2.5;
+p[i*3] += 0.01;
+if(p[i*3] > 3) p[i*3] = -3;
 }
 
 geo.attributes.position.needsUpdate = true;
-
-pipe.rotation.y += 0.0015;
-pipe.rotation.x += 0.001;
 
 renderer.render(scene,camera);
 }
@@ -152,6 +166,11 @@ camera.aspect = innerWidth/innerHeight;
 camera.updateProjectionMatrix();
 renderer.setSize(innerWidth,innerHeight);
 });
+
+/* BUTTON */
+document.querySelector("#book").onclick=()=>{
+window.location.href="mailto:contact@ventiproquebec.ca";
+};
 </script>
 
 </body>
